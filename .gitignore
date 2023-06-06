@@ -1,0 +1,5 @@
+/.idea/
+/app/.gradle/
+
+*.jar
+/app/build/
