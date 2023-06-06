@@ -9,5 +9,6 @@ class MainTest {
     @Test
     void isEven() {
         assertTrue(Main.isEven(2));
+        assertFalse(Main.isEven(1));
     }
 }
