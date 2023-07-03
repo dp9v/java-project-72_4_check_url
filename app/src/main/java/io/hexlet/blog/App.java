@@ -1,6 +1,12 @@
 package io.hexlet.blog;
 
+import io.hexlet.blog.controllers.RootController;
 import io.javalin.Javalin;
+import io.javalin.rendering.template.JavalinThymeleaf;
+import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 public class App {
 
@@ -12,15 +18,35 @@ public class App {
         return getMode().equals("production");
     }
 
+    private static TemplateEngine getTemplateEngine() {
+        var templateEngine = new TemplateEngine();
+
+        var templateResolver = new ClassLoaderTemplateResolver();
+        templateResolver.setPrefix("/templates/");
+        templateResolver.setCharacterEncoding("UTF-8");
+
+        templateEngine.addTemplateResolver(templateResolver);
+        templateEngine.addDialect(new LayoutDialect());
+        templateEngine.addDialect(new Java8TimeDialect());
+        return templateEngine;
+    }
+
+    private static void addRoutes(Javalin app) {
+        app.get("/", RootController.welcome);
+    }
+
     public static Javalin getApp() {
-        return Javalin.create(config -> {
-                if (!isProduction()) {
-                    config.plugins.enableDevLogging();
-                }
+        var app = Javalin.create(config -> {
+            if (!isProduction()) {
+                config.plugins.enableDevLogging();
             }
-        )
-            .get("/", ctx -> ctx.result("Hello World"))
-            .before(ctx -> ctx.attribute("ctx", ctx));
+            config.staticFiles.enableWebjars();
+            JavalinThymeleaf.init(getTemplateEngine());
+        });
+
+        addRoutes(app);
+        app.before(ctx -> ctx.attribute("ctx", ctx));
+        return app;
     }
 
     public static void main(String[] args) {
