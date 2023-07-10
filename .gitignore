@@ -3,3 +3,7 @@
 
 *.jar
 /app/build/
+
+*.db
+
+/*.sql
