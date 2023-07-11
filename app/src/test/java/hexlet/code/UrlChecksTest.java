@@ -1,7 +1,7 @@
-package io.hexlet.blog;
+package hexlet.code;
 
-import io.hexlet.blog.domain.query.QUrl;
-import io.hexlet.blog.domain.query.QUrlCheck;
+import hexlet.code.domain.query.QUrl;
+import hexlet.code.domain.query.QUrlCheck;
 import kong.unirest.Unirest;
 import org.junit.jupiter.api.Test;
 

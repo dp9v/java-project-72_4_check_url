@@ -1,4 +1,4 @@
-package io.hexlet.blog.domain;
+package hexlet.code.domain;
 
 import io.ebean.Model;
 import io.ebean.annotation.NotNull;

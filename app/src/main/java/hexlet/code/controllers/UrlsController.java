@@ -1,9 +1,9 @@
-package io.hexlet.blog.controllers;
+package hexlet.code.controllers;
 
-import io.hexlet.blog.domain.Url;
-import io.hexlet.blog.domain.UrlCheck;
-import io.hexlet.blog.domain.query.QUrl;
-import io.hexlet.blog.domain.query.QUrlCheck;
+import hexlet.code.domain.Url;
+import hexlet.code.domain.UrlCheck;
+import hexlet.code.domain.query.QUrl;
+import hexlet.code.domain.query.QUrlCheck;
 import io.javalin.http.Handler;
 import io.javalin.http.NotFoundResponse;
 import kong.unirest.Unirest;

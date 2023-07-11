@@ -1,7 +1,8 @@
-package io.hexlet.blog;
+package hexlet.code;
 
-import io.hexlet.blog.domain.query.QUrl;
+import hexlet.code.domain.query.QUrl;
 import kong.unirest.Unirest;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -52,8 +53,8 @@ public class UrlsTest extends BaseTest {
             .equalTo(inputUrl)
             .findOne();
 
-        assertThat(createdUrl).isNotNull();
-        assertThat(createdUrl).matches((u) -> u.getName().equals(inputUrl), "Created URL");
+        AssertionsForClassTypes.assertThat(createdUrl).isNotNull();
+        AssertionsForClassTypes.assertThat(createdUrl).matches((u) -> u.getName().equals(inputUrl), "Created URL");
     }
 
     @Test
