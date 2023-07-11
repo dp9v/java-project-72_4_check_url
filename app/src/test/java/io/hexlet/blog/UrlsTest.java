@@ -6,10 +6,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class UrlsControllerTest extends BaseTest {
+public class UrlsTest extends BaseTest {
 
     @Test
-    void testGetList() {
+    public void testGetList() {
         var response = Unirest
             .get(baseUrl + "/urls")
             .asString();
@@ -19,7 +19,7 @@ public class UrlsControllerTest extends BaseTest {
     }
 
     @Test
-    void testShow() {
+    public void testShow() {
         var response = Unirest
             .get(baseUrl + "/urls/" + 1)
             .asString();
@@ -29,7 +29,7 @@ public class UrlsControllerTest extends BaseTest {
     }
 
     @Test
-    void testShowNotFound() {
+    public void testShowNotFound() {
         var response = Unirest
             .get(baseUrl + "/urls/" + 404)
             .asString();
@@ -38,7 +38,7 @@ public class UrlsControllerTest extends BaseTest {
     }
 
     @Test
-    void testCreate() {
+    public void testCreate() {
         String inputUrl = "https://hexlet.io.2";
         var response = Unirest.post(baseUrl + "/urls")
             .field("url", inputUrl)
@@ -57,7 +57,7 @@ public class UrlsControllerTest extends BaseTest {
     }
 
     @Test
-    void testCreateBadUrlFormat() {
+    public void testCreateBadUrlFormat() {
         var response = Unirest.post(baseUrl + "/urls")
             .field("url", "aashexlet.io.2")
             .asString();
@@ -67,20 +67,13 @@ public class UrlsControllerTest extends BaseTest {
     }
 
     @Test
-    void testCreateUrlExists() {
+    public void testCreateUrlExists() {
         var response = Unirest.post(baseUrl + "/urls")
             .field("url", "https://en.hexlet.io")
             .asString();
         assertThat(response.getStatus()).isEqualTo(302);
 
         validateFlashMessage("Страница уже существует");
-    }
-
-    private void validateFlashMessage(String expectedMessage) {
-        var response = Unirest
-            .get(baseUrl + "/urls")
-            .asString();
-        assertThat(response.getBody()).contains(expectedMessage);
     }
 
 }
