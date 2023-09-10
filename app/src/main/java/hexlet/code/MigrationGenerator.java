@@ -1,4 +1,4 @@
-package io.hexlet.blog;
+package hexlet.code;
 
 import io.ebean.annotation.Platform;
 import io.ebean.dbmigration.DbMigration;

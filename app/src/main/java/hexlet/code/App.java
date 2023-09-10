@@ -1,8 +1,9 @@
-package io.hexlet.blog;
+package hexlet.code;
 
-import io.hexlet.blog.controllers.RootController;
-import io.hexlet.blog.controllers.UrlsController;
+import hexlet.code.controllers.RootController;
+import hexlet.code.controllers.UrlsController;
 import io.javalin.Javalin;
+import io.javalin.apibuilder.ApiBuilder;
 import io.javalin.rendering.template.JavalinThymeleaf;
 import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
 import org.thymeleaf.TemplateEngine;
@@ -41,7 +42,7 @@ public class App {
 
         app.routes(() -> {
             path("urls", () -> {
-                post(UrlsController.createUrl);
+                ApiBuilder.post(UrlsController.createUrl);
                 get(UrlsController.getList);
                 path("{id}", () -> {
                     get(UrlsController.showUrl);
