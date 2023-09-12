@@ -1,14 +1,16 @@
 package hexlet.code;
 
-import hexlet.code.domain.query.QUrl;
-import hexlet.code.domain.query.QUrlCheck;
+import hexlet.code.repository.UrlChecksRepository;
+import hexlet.code.repository.UrlsRepository;
 import kong.unirest.Unirest;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class UrlChecksTest extends BaseTest {
 
+    @SneakyThrows
     @Test
     public void testAddCheckSuccess() {
         String url = mockWebServer.url("/")
@@ -19,9 +21,7 @@ public class UrlChecksTest extends BaseTest {
                 .field("url", url)
                 .asEmpty();
 
-        var createdUrl = new QUrl().
-                name.equalTo(url)
-                .findOne();
+        var createdUrl = UrlsRepository.findByName(url).orElse(null);
 
         Unirest.post(baseUrl + "/urls/" + createdUrl.getId() + "/checks")
                 .asEmpty();
@@ -32,11 +32,7 @@ public class UrlChecksTest extends BaseTest {
 
         assertThat(response.getStatus()).isEqualTo(200);
 
-        var createdUrlCheck = new QUrlCheck()
-                .url.equalTo(createdUrl)
-                .orderBy()
-                .createdAt.desc()
-                .findOne();
+        var createdUrlCheck = UrlChecksRepository.findLatestChecks().get(createdUrl.getId());
 
         assertThat(createdUrlCheck).isNotNull();
         assertThat(createdUrlCheck.getStatusCode()).isEqualTo(200);

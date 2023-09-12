@@ -1,7 +1,5 @@
 package hexlet.code;
 
-import io.ebean.DB;
-import io.ebean.Database;
 import io.javalin.Javalin;
 import kong.unirest.Unirest;
 import okhttp3.mockwebserver.MockResponse;
@@ -20,7 +18,6 @@ abstract class BaseTest {
 
     private static Javalin app;
     protected static String baseUrl;
-    protected static Database database;
     protected static MockWebServer mockWebServer;
 
     @BeforeAll
@@ -29,19 +26,12 @@ abstract class BaseTest {
         app.start(0);
         int port = app.port();
         baseUrl = "http://localhost:" + port;
-        database = DB.getDefault();
 
         mockWebServer = new MockWebServer();
         mockWebServer.enqueue(
                 new MockResponse().setBody(loadFixture("index.html"))
         );
         mockWebServer.start();
-    }
-
-    @BeforeEach
-    void beforeEach() {
-        database.script().run("/truncate.sql");
-        database.script().run("/seed.sql");
     }
 
     @AfterAll

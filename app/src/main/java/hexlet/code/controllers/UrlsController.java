@@ -2,8 +2,8 @@ package hexlet.code.controllers;
 
 import hexlet.code.domain.Url;
 import hexlet.code.domain.UrlCheck;
-import hexlet.code.domain.query.QUrl;
-import hexlet.code.domain.query.QUrlCheck;
+import hexlet.code.repository.UrlChecksRepository;
+import hexlet.code.repository.UrlsRepository;
 import io.javalin.http.Handler;
 import io.javalin.http.NotFoundResponse;
 import kong.unirest.Unirest;
@@ -36,16 +36,15 @@ public class UrlsController {
             )
             .toLowerCase();
 
-        Url url = new QUrl()
-            .name.equalTo(normalizedUrl)
-            .findOne();
 
-        if (url != null) {
+        var url = UrlsRepository.findByName(normalizedUrl);
+
+        if (url.isPresent()) {
             ctx.sessionAttribute("flash", "Страница уже существует");
             ctx.sessionAttribute("flash-type", "info");
         } else {
             Url newUrl = new Url(normalizedUrl);
-            newUrl.save();
+            UrlsRepository.save(newUrl);
             ctx.sessionAttribute("flash", "Страница успешно добавлена");
             ctx.sessionAttribute("flash-type", "success");
         }
@@ -54,13 +53,8 @@ public class UrlsController {
     };
 
     public static Handler getList = ctx -> {
-        List<Url> urls = new QUrl().findList();
-
-        Map<Long, UrlCheck> urlChecks = new QUrlCheck()
-            .url.id.asMapKey()
-            .orderBy()
-            .createdAt.desc()
-            .findMap();
+        List<Url> urls = UrlsRepository.getEntities();
+        Map<Long, UrlCheck> urlChecks = UrlChecksRepository.findLatestChecks();
 
         ctx.attribute("urls", urls);
         ctx.attribute("urlChecks", urlChecks);
@@ -68,29 +62,24 @@ public class UrlsController {
     };
 
     public static Handler showUrl = ctx -> {
-        int id = ctx.pathParamAsClass("id", Integer.class).getOrDefault(null);
+        long id = ctx.pathParamAsClass("id", Long.class).getOrDefault(null);
 
-        Url url = new QUrl()
-            .id.equalTo(id)
-            .urlChecks.fetch()
-            .orderBy()
-            .urlChecks.createdAt.desc()
-            .findOne();
+        var url = UrlsRepository.find(id)
+            .orElseThrow(() -> new NotFoundResponse("Url with id = " + id + " not found"));
 
-        if (url == null) {
-            throw new NotFoundResponse();
-        }
+        var urlChecks = UrlChecksRepository.findByUrlId(id);
 
         ctx.attribute("url", url);
+        ctx.attribute("urlChecks", urlChecks);
         ctx.render("urls/item.html");
     };
 
     public static Handler checkUrl = ctx -> {
-        int id = ctx.pathParamAsClass("id", Integer.class).getOrDefault(null);
+        long id = ctx.pathParamAsClass("id", Long.class).getOrDefault(null);
 
-        Url url = new QUrl()
-            .id.equalTo(id)
-            .findOne();
+        Url url = UrlsRepository.findById(id)
+            .orElseThrow(() -> new NotFoundResponse("Url with id = " + id + " not found"));
+
 
         if (url == null) {
             throw new NotFoundResponse();
@@ -107,9 +96,9 @@ public class UrlsController {
             var descriptionElement = doc.selectFirst("meta[name=description]");
             var description = descriptionElement == null ? "" : descriptionElement.attr("content");
 
-            var newUrlCheck = new UrlCheck(statusCode, title, h1, description);
-            url.getUrlChecks().add(newUrlCheck);
-            url.save();
+            UrlCheck newUrlCheck = new UrlCheck(statusCode, title, h1, description);
+            newUrlCheck.setUrlId(id);
+            UrlChecksRepository.save(newUrlCheck);
 
             ctx.sessionAttribute("flash", "Страница успешно проверена");
             ctx.sessionAttribute("flash-type", "success");

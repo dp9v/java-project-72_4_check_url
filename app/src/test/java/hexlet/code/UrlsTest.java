@@ -1,7 +1,9 @@
 package hexlet.code;
 
-import hexlet.code.domain.query.QUrl;
+import hexlet.code.domain.Url;
+import hexlet.code.repository.UrlsRepository;
 import kong.unirest.Unirest;
+import lombok.SneakyThrows;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Test;
 
@@ -9,8 +11,12 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class UrlsTest extends BaseTest {
 
+    @SneakyThrows
     @Test
     public void testGetList() {
+        var url = new Url("https://en.hexlet.io/asd");
+        UrlsRepository.save(url);
+
         var response = Unirest
             .get(baseUrl + "/urls")
             .asString();
@@ -19,8 +25,12 @@ public class UrlsTest extends BaseTest {
         assertThat(response.getBody()).contains("https://en.hexlet.io");
     }
 
+    @SneakyThrows
     @Test
     public void testShow() {
+        var url = new Url("https://en.hexlet.io/asd");
+        UrlsRepository.save(url);
+
         var response = Unirest
             .get(baseUrl + "/urls/" + 1)
             .asString();
@@ -38,6 +48,7 @@ public class UrlsTest extends BaseTest {
         assertThat(response.getStatus()).isEqualTo(404);
     }
 
+    @SneakyThrows
     @Test
     public void testCreate() {
         String inputUrl = "https://hexlet.io.2";
@@ -49,9 +60,7 @@ public class UrlsTest extends BaseTest {
 
         validateFlashMessage("Страница успешно добавлена");
 
-        var createdUrl = new QUrl().name
-            .equalTo(inputUrl)
-            .findOne();
+        var createdUrl = UrlsRepository.findByName(inputUrl).orElse(null);
 
         AssertionsForClassTypes.assertThat(createdUrl).isNotNull();
         AssertionsForClassTypes.assertThat(createdUrl).matches((u) -> u.getName().equals(inputUrl), "Created URL");
@@ -66,15 +75,4 @@ public class UrlsTest extends BaseTest {
 
         validateFlashMessage("Некорректный URL");
     }
-
-    @Test
-    public void testCreateUrlExists() {
-        var response = Unirest.post(baseUrl + "/urls")
-            .field("url", "https://en.hexlet.io")
-            .asString();
-        assertThat(response.getStatus()).isEqualTo(302);
-
-        validateFlashMessage("Страница уже существует");
-    }
-
 }

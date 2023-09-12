@@ -1,19 +1,19 @@
 package hexlet.code.domain;
 
-import io.ebean.Model;
-import io.ebean.annotation.NotNull;
-import io.ebean.annotation.WhenCreated;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
+import java.sql.Timestamp;
 import java.time.Instant;
 
-@Entity
-public final class UrlCheck extends Model {
-    @Id
+@Getter
+@Setter
+@ToString
+public final class UrlCheck {
     private long id;
+
+    private long urlId;
 
     private int statusCode;
 
@@ -21,15 +21,9 @@ public final class UrlCheck extends Model {
 
     private String h1;
 
-    @Lob
     private String description;
 
-    @WhenCreated
-    private Instant createdAt;
-
-    @ManyToOne
-    @NotNull
-    private Url url;
+    private Timestamp createdAt;
 
     public UrlCheck(int statusCode, String title, String h1, String description) {
         this.statusCode = statusCode;
@@ -38,31 +32,8 @@ public final class UrlCheck extends Model {
         this.description = description;
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public int getStatusCode() {
-        return statusCode;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getH1() {
-        return h1;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public Url getUrl() {
-        return url;
+    public Instant getCreatedAtTime() {
+        return createdAt.toInstant();
     }
 }
+
